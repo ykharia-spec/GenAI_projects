@@ -18,26 +18,26 @@ OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
 
 
-graph = build_graph()
+graph = build_graph()    # Build agent graph with nodes and edges
 
 
 # ---------------------------
 # Streamlit UI
 # ---------------------------
-st.set_page_config(page_title="NewsGenie (Lean)", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="NewsGenie (Lean)", layout="wide", initial_sidebar_state="expanded")    # keep the sidebar expanded
 
 with st.sidebar:
     st.subheader("Controls")
     category = st.selectbox("News category", NEWS_CATEGORIES, index=0)
 
-    with st.expander("Show LangGraph workflow (L→R)", expanded=True):
+    with st.expander("Show LangGraph workflow (L→R)", expanded=True):    # keep the langgraph plot expanded and visible
         nodes, edges, edge_labels = default_workflow_metadata()
 
         plot_slot = st.empty()
 
         # If state_out exists this run, highlight it; otherwise show plain graph
         path = st.session_state.get("last_trace", [])
-        fig, _ = plot_langgraph_lr(nodes, edges, edge_labels=edge_labels, path=path)
+        fig, _ = plot_langgraph_lr(nodes, edges, edge_labels=edge_labels, path=path)    # get graph with last path highlighted if it exists
         plot_slot.pyplot(fig, clear_figure=True)
 
     st.caption("Tip: Ask 'latest news on <topic>' for best results.")
@@ -75,7 +75,7 @@ if user_input:
                 "category": category,
             }
             try:
-                state_out = graph.invoke(state_in)
+                state_out = graph.invoke(state_in)    # Execute the langraph
 
                 print("Intent:", state_out.get("intent"))
                 print("Final answer:", state_out.get("answer"))
@@ -90,7 +90,7 @@ if user_input:
                 # Render/update the workflow plot in the sidebar using the *updated* trace
                 nodes, edges, edge_labels = default_workflow_metadata()
                 path = st.session_state.get("last_trace", [])
-                fig, _ = plot_langgraph_lr(nodes, edges, edge_labels=edge_labels, path=path)
+                fig, _ = plot_langgraph_lr(nodes, edges, edge_labels=edge_labels, path=path)    # highlight the activated nodes and edges from the graph invocation
                 plot_slot.pyplot(fig, clear_figure=True)
 
                 answer = state_out.get("answer", "No answer produced.")
@@ -98,4 +98,4 @@ if user_input:
                 answer = f"⚠️ Error: {e}"
 
         st.write(answer)
-        st.session_state.messages.append(AIMessage(content=answer))
+        st.session_state.messages.append(AIMessage(content=answer))    # write out the answe/AIMessae which is the LLM output
