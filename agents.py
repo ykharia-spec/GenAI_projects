@@ -86,17 +86,17 @@ def node_router_agent(state: dict) -> dict:
         state["error"] = None
         return state
 
-    NEWS_HINTS = ("news", "headline", "headlines", "latest", "updates", "breaking")
+    NEWS_HINTS = ("news", "headline", "headlines", "latest", "updates", "breaking")    # some key words to interpret the user query intends to get 'news'
     if any(h in lowered for h in NEWS_HINTS):
         state["intent"] = "news"
         state["error"] = None
         return state
 
     msgs = [
-        SystemMessage(content=ROUTER_SYSTEM),
-        HumanMessage(content=f"Category: {category}\nUser: {user_query}"),
+        SystemMessage(content=ROUTER_SYSTEM),    # System Prompt to the LLM, also defines that the output be a strict json format
+        HumanMessage(content=f"Category: {category}\nUser: {user_query}"),    # Human query
     ]
-    resp = llm_router.invoke(msgs).content
+    resp = llm_router.invoke(msgs).content    # Invoke the LLM with the System and Human messages/prompts
 
     try:
         data = json.loads(resp)
@@ -138,7 +138,7 @@ def node_news_agent(state: dict) -> dict:
 
     # 1) Try News API
     try:
-        news_items = fetch_news(category, user_query)
+        news_items = fetch_news(category, user_query)    # fetch news from newsapi.org based on user_query
     except Exception as e:
         error = str(e)
         news_items = []
@@ -146,7 +146,7 @@ def node_news_agent(state: dict) -> dict:
     # 2) If no news found (or API failed), do web search fallback
     if not news_items:
         try:
-            web_results = web_search(user_query, max_results=5)
+            web_results = web_search(user_query, max_results=5)    # No news found at newsapi.org. So, use web search.
         except Exception as e:
             error = error or str(e)
             web_results = []
@@ -165,8 +165,8 @@ def node_news_agent(state: dict) -> dict:
     }
 
     prompt = [
-        SystemMessage(content=NEWS_SYSTEM),
-        HumanMessage(content=f"Context JSON:\n{json.dumps(context, ensure_ascii=False, indent=2)}\n\nWrite the response."),
+        SystemMessage(content=NEWS_SYSTEM),    # System prompt to let LLM know it is news agent and what it should output
+        HumanMessage(content=f"Context JSON:\n{json.dumps(context, ensure_ascii=False, indent=2)}\n\nWrite the response."),    # Provide a nice formatted json of the context to LLM
     ]
     ans = llm_news.invoke(prompt).content
     state["answer"] = ans
