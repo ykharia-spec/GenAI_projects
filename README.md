@@ -5,5 +5,6 @@ Project builds on Langgraph framework, streamlit for UX, gpt-40-mini as LLM and 
 
 Need keys to access news and LLM. Create a .env with the following keys in it:
 
-OPENAI_API_KEY = "YOUR_OPENAI_API_KEY"
-NEWS_API_KEY = "YOUR_NEWS_API_KEY"
+OPENAI_API_KEY="YOUR_OPENAI_API_KEY"
+NEWS_API_KEY="YOUR_NEWS_API_KEY"
+OPENAI_MODEL="gpt-4o-mini"
